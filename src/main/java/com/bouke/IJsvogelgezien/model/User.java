@@ -81,3 +81,4 @@ public class User {
 
     // Getters and Setters
 }
+ // klaar voor de database ?
