@@ -1,45 +1,34 @@
-//    •	Behandelt verzoeken met betrekking tot gebruikersregistratie, login en profielbeheer.
-//	•	Endpoints voor registreren, inloggen, en ophalen van gebruikersinformatie.
-
-
-
 package com.bouke.IJsvogelgezien.controller;
 
 import com.bouke.IJsvogelgezien.model.User;
 import com.bouke.IJsvogelgezien.service.UserService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 public class UserController {
 
-    private final UserService userService;
-
-    // Constructor-injectie
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    @Autowired
+    private UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody User user) {
-        if (userService.existsByUsername(user.getUsername())) {
-            return ResponseEntity.badRequest().body("Error: Username is already taken!");
+    public String register(@RequestParam String username, @RequestParam String email, @RequestParam String password) {
+        try {
+            userService.registerUser(username, email, password);
+            return "User registered successfully";
+        } catch (RuntimeException e) {
+            return e.getMessage();
         }
-        if (userService.existsByEmail(user.getEmail())) {
-            return ResponseEntity.badRequest().body("Error: Email is already in use!");
-        }
-        userService.save(user);
-        return ResponseEntity.ok("User registered successfully!");
     }
 
-    @GetMapping("/{username}")
-    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
-        Optional<User> user = userService.findByUsername(username);
-        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping("/login")
+    public String login() {
+        return "Login page";
     }
 
-    // Voeg hier andere endpoints toe als dat nodig is
+    @GetMapping("/home")
+    public String home() {
+        return "Welcome to the home page!";
+    }
 }

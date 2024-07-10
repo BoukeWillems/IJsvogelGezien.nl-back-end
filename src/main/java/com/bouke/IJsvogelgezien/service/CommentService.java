@@ -1,41 +1,37 @@
-//    	•	Bevat logica voor het beheren van reacties op waarnemingen.
-
-
 package com.bouke.IJsvogelgezien.service;
 
 import com.bouke.IJsvogelgezien.model.Comment;
+import com.bouke.IJsvogelgezien.model.Observation;
+import com.bouke.IJsvogelgezien.model.User;
 import com.bouke.IJsvogelgezien.repository.CommentRepository;
+import com.bouke.IJsvogelgezien.repository.ObservationRepository;
+import com.bouke.IJsvogelgezien.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CommentService {
 
-    private final CommentRepository commentRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
-    public CommentService(CommentRepository commentRepository) {
-        this.commentRepository = commentRepository;
-    }
+    @Autowired
+    private ObservationRepository observationRepository;
 
-    public List<Comment> findAll() {
-        return commentRepository.findAll();
-    }
+    @Autowired
+    private UserRepository userRepository;
 
-    public List<Comment> findByPostId(Long postId) {
-        return commentRepository.findByPostId(postId);
-    }
-
-    public Optional<Comment> findById(Long id) {
-        return commentRepository.findById(id);
-    }
-
-    public Comment save(Comment comment) {
+    public Comment addComment(String text, Long observationId, Long userId) {
+        Observation observation = observationRepository.findById(observationId).orElseThrow(() -> new RuntimeException("Observation not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Comment comment = new Comment(text, LocalDateTime.now(), observation, user);
         return commentRepository.save(comment);
     }
 
-    public void deleteById(Long id) {
-        commentRepository.deleteById(id);
+    public List<Comment> getCommentsByObservation(Long observationId) {
+        return commentRepository.findByObservationId(observationId);
     }
 }
