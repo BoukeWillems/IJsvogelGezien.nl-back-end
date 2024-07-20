@@ -1,15 +1,20 @@
 package com.bouke.IJsvogelgezien.security;
 
 import com.bouke.IJsvogelgezien.model.User;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class UserPrincipal implements UserDetails {
+@Getter
+@Setter
+public class UserPrincipal implements UserDetails, Serializable {
     private Long id;
     private String username;
     private String email;
@@ -51,14 +56,6 @@ public class UserPrincipal implements UserDetails {
     @Override
     public String getUsername() {
         return username;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getEmail() {
-        return email;
     }
 
     @Override

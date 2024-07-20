@@ -9,8 +9,9 @@ import java.util.Set;
 @Setter
 @Getter
 @Entity
+@Table(name = "roles")
 public class Role {
-    // Getters and setters
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
