@@ -26,6 +26,9 @@ public class CommentService {
     @Autowired
     private ObservationRepository observationRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public Comment addComment(Long userId, Long uploadId, String text, Long parentCommentId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         Observation upload = observationRepository.findById(uploadId).orElseThrow(() -> new RuntimeException("Upload not found"));
@@ -41,7 +44,13 @@ public class CommentService {
             comment.setParentComment(parentComment);
         }
 
-        return commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
+
+        // Create notification
+        String message = user.getUsername() + " commented on your upload.";
+        notificationService.createNotification(upload.getUser().getId(), message);
+
+        return savedComment;
     }
 
     public List<CommentDTO> getCommentsByUploadId(Long uploadId) {
