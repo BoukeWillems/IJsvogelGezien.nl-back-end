@@ -1,5 +1,6 @@
 package com.bouke.IJsvogelgezien.service;
 
+import com.bouke.IJsvogelgezien.dto.CommentDTO;
 import com.bouke.IJsvogelgezien.model.Comment;
 import com.bouke.IJsvogelgezien.model.Observation;
 import com.bouke.IJsvogelgezien.model.User;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
-
+import java.util.stream.Collectors;
 
 @Service
 public class CommentService {
@@ -43,11 +44,32 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
-    public List<Comment> getCommentsByUploadId(Long uploadId) {
-        return commentRepository.findByUploadId(uploadId);
+    public List<CommentDTO> getCommentsByUploadId(Long uploadId) {
+        return commentRepository.findByUploadId(uploadId).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
-    public List<Comment> getRepliesByCommentId(Long parentCommentId) {
-        return commentRepository.findByParentCommentId(parentCommentId);
+    public List<CommentDTO> getRepliesByCommentId(Long parentCommentId) {
+        return commentRepository.findByParentCommentId(parentCommentId).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public CommentDTO mapToDTO(Comment comment) {
+        CommentDTO dto = new CommentDTO();
+        dto.setId(comment.getId());
+        dto.setText(comment.getText());
+        dto.setDate(comment.getDate());
+        dto.setUserId(comment.getUser().getId());
+        dto.setUsername(comment.getUser().getUsername());
+        dto.setUploadId(comment.getUpload().getId());
+        if (comment.getParentComment() != null) {
+            dto.setParentCommentId(comment.getParentComment().getId());
+        }
+        dto.setReplies(comment.getReplies().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList()));
+        return dto;
     }
 }

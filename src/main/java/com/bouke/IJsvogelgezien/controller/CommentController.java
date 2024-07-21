@@ -1,5 +1,6 @@
 package com.bouke.IJsvogelgezien.controller;
 
+import com.bouke.IJsvogelgezien.dto.CommentDTO;
 import com.bouke.IJsvogelgezien.model.Comment;
 import com.bouke.IJsvogelgezien.security.UserPrincipal;
 import com.bouke.IJsvogelgezien.service.CommentService;
@@ -26,21 +27,22 @@ public class CommentController {
         try {
             Long userId = ((UserPrincipal) authentication.getPrincipal()).getId();
             Comment comment = commentService.addComment(userId, uploadId, text, parentCommentId);
-            return ResponseEntity.ok(comment);
+            CommentDTO commentDTO = commentService.mapToDTO(comment);
+            return ResponseEntity.ok(commentDTO);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @GetMapping("/upload/{uploadId}")
-    public ResponseEntity<List<Comment>> getCommentsByUploadId(@PathVariable Long uploadId) {
-        List<Comment> comments = commentService.getCommentsByUploadId(uploadId);
+    public ResponseEntity<List<CommentDTO>> getCommentsByUploadId(@PathVariable Long uploadId) {
+        List<CommentDTO> comments = commentService.getCommentsByUploadId(uploadId);
         return ResponseEntity.ok(comments);
     }
 
     @GetMapping("/comment/{commentId}/replies")
-    public ResponseEntity<List<Comment>> getRepliesByCommentId(@PathVariable Long commentId) {
-        List<Comment> replies = commentService.getRepliesByCommentId(commentId);
+    public ResponseEntity<List<CommentDTO>> getRepliesByCommentId(@PathVariable Long commentId) {
+        List<CommentDTO> replies = commentService.getRepliesByCommentId(commentId);
         return ResponseEntity.ok(replies);
     }
 }

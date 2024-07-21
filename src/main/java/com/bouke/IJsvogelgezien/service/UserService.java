@@ -1,6 +1,7 @@
 package com.bouke.IJsvogelgezien.service;
 
 import com.bouke.IJsvogelgezien.dto.SignUpRequestDTO;
+import com.bouke.IJsvogelgezien.dto.UserDTO;
 import com.bouke.IJsvogelgezien.model.Role;
 import com.bouke.IJsvogelgezien.model.RoleName;
 import com.bouke.IJsvogelgezien.model.User;
@@ -62,15 +63,8 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public UserDetails loadUserById(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error("User not found with id: {}", id);
-                    return new UsernameNotFoundException("User not found with id: " + id);
-                });
-
-        logger.info("User found with id: {}", id);
-        return UserPrincipal.create(user);
+    public Optional<User> loadUserById(Long id) {
+        return userRepository.findById(id);
     }
 
     public User registerUser(SignUpRequestDTO signUpRequestDTO) {
@@ -96,5 +90,13 @@ public class UserService implements UserDetailsService {
         User registeredUser = userRepository.save(user);
         logger.info("User registered successfully with username: {}", registeredUser.getUsername());
         return registeredUser;
+    }
+
+    public UserDTO mapToDTO(User user) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setUsername(user.getUsername());
+        userDTO.setEmail(user.getEmail());
+        return userDTO;
     }
 }
