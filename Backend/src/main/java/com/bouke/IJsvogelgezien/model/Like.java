@@ -9,8 +9,8 @@ import java.util.Date;
 @Getter
 @Setter
 @Entity
-@Table(name = "notifications")
-public class Notification {
+@Table(name = "likes")
+public class Like {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,25 +20,22 @@ public class Notification {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private String message;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "upload_id", nullable = false)
+    private Observation upload;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date date;
 
-    private Boolean read;
 
-    // Default constructor
-    public Notification() {
+    public Like() {
         this.date = new Date();
-        this.read = false;
     }
 
-    // Constructor
-    public Notification(User user, String message) {
+    public Like(User user, Observation upload) {
         this.user = user;
-        this.message = message;
+        this.upload = upload;
         this.date = new Date();
-        this.read = false;
     }
 }

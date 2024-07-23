@@ -46,7 +46,6 @@ public class CommentService {
 
         Comment savedComment = commentRepository.save(comment);
 
-        // Create notification
         String message = user.getUsername() + " commented on your upload.";
         notificationService.createNotification(upload.getUser().getId(), message);
 

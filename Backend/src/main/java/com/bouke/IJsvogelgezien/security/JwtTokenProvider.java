@@ -47,20 +47,13 @@ public class JwtTokenProvider {
     }
 
     public String getUsernameFromJWT(String token) {
-        try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
 
-            String username = claims.getSubject();
-            logger.info("Extracted username from JWT: {}", username);
-            return username;
-        } catch (Exception e) {
-            logger.error("Could not extract username from JWT: {}", e.getMessage());
-            return null;
-        }
+        return claims.getSubject();
     }
 
     public boolean validateToken(String authToken) {
@@ -73,5 +66,18 @@ public class JwtTokenProvider {
             logger.error("Expired JWT token: {}", ex.getMessage());
         }
         return false;
+    }
+
+
+    public String generateTokenFromUsername(String username) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
+
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
     }
 }
