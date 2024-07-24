@@ -10,6 +10,8 @@ import com.bouke.IJsvogelgezien.repository.UserRepository;
 import com.bouke.IJsvogelgezien.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,9 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -57,9 +57,13 @@ public class UserService implements UserDetailsService {
                     logger.error("User not found with username: {}", username);
                     return new UsernameNotFoundException("User not found with username: " + username);
                 });
-
+        Set<Role> roles = user.getRoles();
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+        for (Role role : roles) {
+            grantedAuthorities.add(new SimpleGrantedAuthority(role.getName().name()));
+        }
         logger.info("User found with username: {}", username);
-        return UserPrincipal.create(user);
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), grantedAuthorities);
     }
 
     @Transactional
