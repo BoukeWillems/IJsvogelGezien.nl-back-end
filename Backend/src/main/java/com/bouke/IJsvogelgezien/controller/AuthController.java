@@ -43,8 +43,8 @@ public class AuthController {
     @Autowired
     JwtTokenProvider tokenProvider;
 
-    @Autowired
-    RefreshTokenService refreshTokenService;
+//    @Autowired
+//    RefreshTokenService refreshTokenService;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -61,9 +61,9 @@ public class AuthController {
         User user = userRepository.findByUsername(loginRequest.getUsername()).orElseThrow(
                 () -> new RuntimeException("Error: User is not found."));
 
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+//        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
-        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt, refreshToken.getToken()));
+        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt, null));
     }
 
     @PostMapping("/signup")
@@ -90,17 +90,5 @@ public class AuthController {
 
         return ResponseEntity.ok("User registered successfully!");
     }
-
-    @PostMapping("/refreshtoken")
-    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
-        String requestRefreshToken = request.getRefreshToken();
-        RefreshToken refreshToken = refreshTokenService.findByToken(requestRefreshToken)
-                .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
-
-        RefreshToken validRefreshToken = refreshTokenService.verifyExpiration(refreshToken);  // De waarde wordt nu gebruikt
-        User user = validRefreshToken.getUser();
-        String token = tokenProvider.generateTokenFromUsername(user.getUsername());
-
-        return ResponseEntity.ok(new JwtAuthenticationResponse(token, requestRefreshToken));
-    }
 }
+

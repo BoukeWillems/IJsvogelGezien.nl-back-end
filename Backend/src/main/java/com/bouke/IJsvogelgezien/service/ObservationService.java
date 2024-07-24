@@ -54,11 +54,15 @@ public class ObservationService {
         }
 
         byte[] bytes = photo.getBytes();
-        String uploadDir = "src/main/resources/uploads/";
-        Path path = Paths.get(uploadDir + photo.getOriginalFilename());
-        Files.write(path, bytes);
+        String uploadDir = "Backend/src/main/resources/uploads/";
+        Path path = Paths.get(uploadDir);
+        if (!Files.exists(path)) {
+            Files.createDirectories(path);
+        }
+        Path filePath = Paths.get(uploadDir + photo.getOriginalFilename());
+        Files.write(filePath, bytes);
 
-        return path.toString();
+        return filePath.toString();
     }
 
     private ObservationDTO mapToDTO(Observation observation) {

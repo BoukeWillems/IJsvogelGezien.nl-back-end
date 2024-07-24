@@ -30,7 +30,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Like> likes;
 
-    // Constructor with parameters
     public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
