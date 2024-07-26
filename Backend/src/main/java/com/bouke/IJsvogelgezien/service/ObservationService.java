@@ -13,8 +13,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,6 +50,44 @@ public class ObservationService {
         return observations.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 
+    public ObservationDTO getObservationById(Long observationId) throws Exception {
+        Optional<Observation> observationOptional = observationRepository.findById(observationId);
+        if (observationOptional.isPresent()) {
+            Observation observation = observationOptional.get();
+            return mapToDTO(observation);
+        } else {
+            throw new Exception("Observation not found");
+        }
+    }
+
+    public List<ObservationDTO> getAllObservations() {
+        List<Observation> observations = observationRepository.findAll();
+        return observations.stream().map(this::mapToDTO).collect(Collectors.toList());
+    }
+
+    public List<ObservationDTO> getObservationsByRadius(double latitude, double longitude, double radius) {
+        List<Observation> observations = observationRepository.findByLocationWithinRadius(latitude, longitude, radius);
+        return observations.stream().map(this::mapToDTO).collect(Collectors.toList());
+    }
+
+    public List<ObservationDTO> getObservationsByPeriod(String startDate, String endDate) throws Exception {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date start = formatter.parse(startDate);
+        Date end = formatter.parse(endDate);
+        List<Observation> observations = observationRepository.findByDateBetween(start, end);
+        return observations.stream().map(this::mapToDTO).collect(Collectors.toList());
+    }
+
+    public List<ObservationDTO> getRecentObservations() {
+        List<Observation> observations = observationRepository.findTop5ByOrderByDateDesc();
+        return observations.stream().map(this::mapToDTO).collect(Collectors.toList());
+    }
+
+    public List<ObservationDTO> getNearbyObservations(double latitude, double longitude, double radius) {
+        List<Observation> observations = observationRepository.findTop5ByLocationWithinRadius(latitude, longitude, radius);
+        return observations.stream().map(this::mapToDTO).collect(Collectors.toList());
+    }
+
     private String savePhoto(MultipartFile photo) throws IOException {
         if (photo.isEmpty()) {
             throw new RuntimeException("Empty photo file");
@@ -65,7 +105,7 @@ public class ObservationService {
         return filePath.toString();
     }
 
-    private ObservationDTO mapToDTO(Observation observation) {
+    public ObservationDTO mapToDTO(Observation observation) {
         ObservationDTO dto = new ObservationDTO();
         dto.setId(observation.getId());
         dto.setDescription(observation.getDescription());

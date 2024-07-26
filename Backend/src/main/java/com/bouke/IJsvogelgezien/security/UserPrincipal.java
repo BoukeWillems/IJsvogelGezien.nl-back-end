@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Setter
 public class UserPrincipal implements UserDetails, Serializable {
     private Long id;
-    private String username;
+    private static String username;
     private String email;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
