@@ -10,6 +10,6 @@ import java.util.Date;
 public class LikeDTO {
     private Long id;
     private Long userId;
-    private Long uploadId;
+    private Long observationId;
     private Date date;
 }

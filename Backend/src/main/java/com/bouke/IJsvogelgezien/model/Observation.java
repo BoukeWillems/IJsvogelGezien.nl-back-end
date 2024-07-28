@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Setter
@@ -32,7 +33,8 @@ public class Observation {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "upload", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "observation", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Like> likes;
+
 
 }

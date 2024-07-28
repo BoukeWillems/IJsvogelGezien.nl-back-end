@@ -70,7 +70,6 @@ public class ObservationService {
         return observations.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 
-
     public List<ObservationDTO> getObservationsByPeriod(String startDate, String endDate) throws Exception {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date start = formatter.parse(startDate);
@@ -84,7 +83,7 @@ public class ObservationService {
         return observations.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 
-    public List<ObservationDTO> getNearbyObservations(Double latitude, Double longitude, Double radius) {
+    public List<ObservationDTO> getNearbyObservations(double latitude, double longitude, double radius) {
         List<Observation> observations = observationRepository.findTop5ByLocationWithinRadius(latitude, longitude, radius);
         return observations.stream().map(this::mapToDTO).collect(Collectors.toList());
     }

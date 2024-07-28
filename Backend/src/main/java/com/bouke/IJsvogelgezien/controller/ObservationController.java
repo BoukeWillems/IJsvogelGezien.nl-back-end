@@ -1,6 +1,7 @@
 package com.bouke.IJsvogelgezien.controller;
 
 import com.bouke.IJsvogelgezien.dto.ObservationDTO;
+import com.bouke.IJsvogelgezien.security.UserPrincipal;
 import com.bouke.IJsvogelgezien.service.ObservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -8,6 +9,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,13 +35,16 @@ public class ObservationController {
             @RequestParam("latitude") String latitude,
             @RequestParam("longitude") String longitude,
             @RequestParam("date") String date,
-            @RequestParam("photo") MultipartFile photo) {
+            @RequestParam("photo") MultipartFile photo,
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
         try {
             double latitudeDouble = Double.parseDouble(latitude);
             double longitudeDouble = Double.parseDouble(longitude);
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             Date date1 = formatter.parse(date);
+//            String username = userPrincipal.getUsername();
 
+            // Extract userId from token
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String username = authentication.getName();
 
@@ -79,13 +84,12 @@ public class ObservationController {
 
     @GetMapping("/radius")
     public ResponseEntity<List<ObservationDTO>> getObservationsByRadius(
-            @RequestParam("latitude") Double latitude,
-            @RequestParam("longitude") Double longitude,
-            @RequestParam("radius") Double radius) {
+            @RequestParam("latitude") double latitude,
+            @RequestParam("longitude") double longitude,
+            @RequestParam("radius") double radius) {
         List<ObservationDTO> observations = observationService.getObservationsByRadius(latitude, longitude, radius);
         return ResponseEntity.ok(observations);
     }
-
 
     @GetMapping("/period")
     public ResponseEntity<List<ObservationDTO>> getObservationsByPeriod(
@@ -114,13 +118,12 @@ public class ObservationController {
             @RequestParam("lat") double latitude,
             @RequestParam("lon") double longitude) {
         try {
-            List<ObservationDTO> observations = observationService.getNearbyObservations(latitude, longitude, 25.0);
+            List<ObservationDTO> observations = observationService.getNearbyObservations(latitude, longitude, 25);
             return ResponseEntity.ok(observations);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }
     }
-
 
     @GetMapping("/uploads/{filename:.+}")
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {

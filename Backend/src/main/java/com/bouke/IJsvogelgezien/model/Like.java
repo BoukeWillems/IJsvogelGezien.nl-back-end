@@ -21,8 +21,8 @@ public class Like {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "upload_id", nullable = false)
-    private Observation upload;
+    @JoinColumn(name = "observation_id", nullable = false)
+    private Observation observation;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
@@ -33,9 +33,9 @@ public class Like {
         this.date = new Date();
     }
 
-    public Like(User user, Observation upload) {
+    public Like(User user, Observation observation) {
         this.user = user;
-        this.upload = upload;
+        this.observation = observation;
         this.date = new Date();
     }
 }

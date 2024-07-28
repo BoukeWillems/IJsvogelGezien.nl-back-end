@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -36,5 +39,11 @@ public class UserController {
                 .orElseThrow(() -> new RuntimeException("UserID not found"));
         UserDTO userDTO = userService.mapToDTO(user);
         return ResponseEntity.ok(userDTO);
+    }
+
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<UserDTO> getAllUsers(){
+        return userService.GetAllUsers();
     }
 }

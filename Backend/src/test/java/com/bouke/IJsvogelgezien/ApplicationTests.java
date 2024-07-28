@@ -1,4 +1,4 @@
-package com.bouke.IJsvogelgezien;
+package java.com.bouke.IJsvogelgezien;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

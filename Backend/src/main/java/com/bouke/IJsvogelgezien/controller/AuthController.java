@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -69,11 +70,19 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity.badRequest().body("Error: Username is already taken!");
+            return ResponseEntity.ok(Map.of(
+                            "Message","Username already taken",
+                            "status","duplicate"
+                    )
+            );
         }
 
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body("Error: Email is already in use!");
+            return ResponseEntity.ok(Map.of(
+                            "Message","Email already taken",
+                            "status","duplicate"
+                    )
+            );
         }
 
         User user = new User();
@@ -88,7 +97,12 @@ public class AuthController {
 
         userRepository.save(user);
 
-        return ResponseEntity.ok("User registered successfully!");
+        return ResponseEntity.ok(Map.of(
+                "Message","User created Successfully",
+                "status","success",
+                "username",signUpRequest.getUsername(),
+                "email",signUpRequest.getEmail()
+
+        ));
     }
 }
-

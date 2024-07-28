@@ -7,7 +7,6 @@ import com.bouke.IJsvogelgezien.model.RoleName;
 import com.bouke.IJsvogelgezien.model.User;
 import com.bouke.IJsvogelgezien.repository.RoleRepository;
 import com.bouke.IJsvogelgezien.repository.UserRepository;
-import com.bouke.IJsvogelgezien.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -69,6 +69,13 @@ public class UserService implements UserDetailsService {
     @Transactional
     public Optional<User> loadUserById(Long id) {
         return userRepository.findById(id);
+    }
+
+    public List<UserDTO> GetAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
     public User registerUser(SignUpRequestDTO signUpRequestDTO) {

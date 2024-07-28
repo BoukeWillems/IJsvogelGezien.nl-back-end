@@ -45,7 +45,8 @@ public class SecurityConfig {
                         authorizeRequestsConfigurer
                                 .requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers("/uploads/**").permitAll()
-                                .requestMatchers("/api/observations/radius").authenticated()
+                                .requestMatchers("/api/comments/observation/**").permitAll()
+                                .requestMatchers("/api/comments/replies/**").permitAll()
                                 .anyRequest().authenticated());
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

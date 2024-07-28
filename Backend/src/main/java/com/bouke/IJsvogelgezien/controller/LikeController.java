@@ -1,14 +1,13 @@
 package com.bouke.IJsvogelgezien.controller;
 
 import com.bouke.IJsvogelgezien.dto.LikeDTO;
-import com.bouke.IJsvogelgezien.security.UserPrincipal;
 import com.bouke.IJsvogelgezien.service.LikeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/likes")
@@ -17,44 +16,28 @@ public class LikeController {
     @Autowired
     private LikeService likeService;
 
-    @PostMapping("/like")
-    public ResponseEntity<?> likeUpload(@RequestParam("uploadId") Long uploadId, Authentication authentication) {
-        try {
-            Long userId = ((UserPrincipal) authentication.getPrincipal()).getId();
-            LikeDTO likeDTO = likeService.likeUpload(userId, uploadId);
-            return ResponseEntity.ok(likeDTO);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    @PostMapping("/like_unlike/{uploadId}")
+    public ResponseEntity<Map<String,String>> addLike(@PathVariable Long uploadId) {
+        return likeService.likeUnlike(uploadId);
     }
 
-    @PostMapping("/unlike")
-    public ResponseEntity<?> unlikeUpload(@RequestParam("uploadId") Long uploadId, Authentication authentication) {
-        try {
-            Long userId = ((UserPrincipal) authentication.getPrincipal()).getId();
-            likeService.unlikeUpload(userId, uploadId);
-            return ResponseEntity.ok("Upload unliked successfully");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
 
-    @GetMapping("/count/{uploadId}")
-    public ResponseEntity<Long> getLikeCount(@PathVariable Long uploadId) {
-        Long likeCount = likeService.getLikeCount(uploadId);
-        return ResponseEntity.ok(likeCount);
-    }
-
-    @GetMapping("/hasLiked/{uploadId}")
-    public ResponseEntity<Boolean> hasUserLiked(@PathVariable Long uploadId, Authentication authentication) {
-        Long userId = ((UserPrincipal) authentication.getPrincipal()).getId();
-        Boolean hasLiked = likeService.hasUserLiked(userId, uploadId);
-        return ResponseEntity.ok(hasLiked);
-    }
-
-    @GetMapping("/upload/{uploadId}")
-    public ResponseEntity<List<LikeDTO>> getLikesByUploadId(@PathVariable Long uploadId) {
-        List<LikeDTO> likes = likeService.getLikesByUploadId(uploadId);
+    @GetMapping("/observation/{uploadId}")
+    public ResponseEntity<List<LikeDTO>> getLikesByObservation(@PathVariable Long uploadId) {
+        List<LikeDTO> likes = likeService.getLikesByObservation(uploadId);
         return ResponseEntity.ok(likes);
+    }
+
+    @GetMapping("/observation/count/{uploadId}")
+    public ResponseEntity<Map<String,String>> ObservationLikeCounter(@PathVariable long uploadId){
+        List<LikeDTO> likes = likeService.getLikesByObservation(uploadId);
+        int count = (int) likes.stream().count();
+        return ResponseEntity.ok(Map.of(
+
+                "ObservationId", String.valueOf(uploadId),
+                "Total Likes",String.valueOf(count) ,
+                "status", "success"
+
+        ));
     }
 }
